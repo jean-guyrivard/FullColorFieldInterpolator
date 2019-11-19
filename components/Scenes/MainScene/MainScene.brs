@@ -33,7 +33,7 @@ sub init()
   m.fcfi.update({
     fieldToInterp: "left.color"
     key: [0, 0.5, 1]
-    keyValue: ["0x0000FFFF", "0x00FF00FF", "0xFF0000FF"]
+    keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
   })
 
   m.anim.control = "start"
