@@ -15,10 +15,12 @@ sub onFieldToInterpChange(event)
     nodeId = left(field, dot-1)
     m.targetNode = m.top.getScene().findNode(nodeId)
     nodeField = mid(field, dot+1)
+    m.targetFieldName = nodeField
     m.targetField = m.targetNode[nodeField]
   else
     m.targetNode = Invalid
     m.targetField = Invalid
+    m.targetFieldName = Invalid
   end if
 end sub
 
@@ -38,19 +40,31 @@ sub onFractionChange(event)
   fraction = event.getData()
   self = event.getRoSGNode()
   index = 0
+  curIndex = 0
 
-  for each key in self.key
-    if fraction > key
+  if Invalid <> self.key AND Invalid <> self.keyValue
+    for each key in self.key
+      if fraction > key AND (Invalid = m.top.reverse OR false = m.top.reverse)
+        curIndex = index
+      else if fraction < key AND true = m.top.reverse
+        curIndex = index
+      end if
+      index++
+    end for
+
+    if Invalid <> self.keyValue[curIndex] AND Invalid <> m.colorDelta[curIndex]
+      startColor = convertColor(self.keyValue[curIndex])
+
+      r = startColor.r + (m.colorDelta[curIndex].r * fraction)
+      g = startColor.g + (m.colorDelta[curIndex].g * fraction)
+      b = startColor.b + (m.colorDelta[curIndex].b * fraction)
+      a = startColor.a + (m.colorDelta[curIndex].a * fraction)
+
+      ?fraction, StrI(r, 16), StrI(g, 16), StrI(b, 16), StrI(a, 16)
+
+      m.targetNode[m.targetFieldName] = (r << 24) + (g << 16) + (b << 8) + (a << 0)
     end if
-  end for
-  startColor = convertColor(self.keyValue[index])
-
-  r = startColor.r + (m.colorDelta.r * fraction) * &hff000000
-  g = startColor.g + (m.colorDelta.g * fraction) * &h00ff0000
-  b = startColor.b + (m.colorDelta.b * fraction) * &h0000ff00
-  a = startColor.a + (m.colorDelta.a * fraction) * &h000000ff
-
-  m.targetField = r + g + b + a
+  end if
 end sub
 
 sub updateColorTransition(self)
@@ -58,14 +72,19 @@ sub updateColorTransition(self)
 
   first = true
   index = 0
+
+  if self.key.count() <> self.keyValue.count()
+    return
+  end if
+
   for each colorChange in self.keyValue
     if false = first
       curColor = convertColor(colorChange)
 
-      rDelta = (prevColor.r - curColor.r) / (self.key[1] - self.key[0])
-      gDelta = (prevColor.g - curColor.g) / (self.key[1] - self.key[0])
-      bDelta = (prevColor.b - curColor.b) / (self.key[1] - self.key[0])
-      aDelta = (prevColor.a - curColor.a) / (self.key[1] - self.key[0])
+      rDelta = curColor.r - prevColor.r
+      gDelta = curColor.g - prevColor.g
+      bDelta = curColor.b - prevColor.b
+      aDelta = curColor.a - prevColor.a
 
       m.colorDelta.push({r: rDelta, g: gDelta, b: bDelta, a: aDelta})
     else
@@ -82,6 +101,10 @@ function convertColor(inColor)
   g = 0
   b = 0
   a = 255
+
+  if Invalid = inColor
+    return {r: r, g: g, b: b, a: a}
+  end if
 
   if 0 <> instr(0, lcase(type(inColor)), "string")
     ?"String"

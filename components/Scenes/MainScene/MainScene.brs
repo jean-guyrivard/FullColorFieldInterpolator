@@ -20,20 +20,36 @@ sub init()
   })
 
   m.anim.update({
-    duration: 10,
-    repeat: true
+    duration: 20,
+    repeat: true,
+    easeFunction:"linear"
   })
+
+  ' m.cfi.update({
+  '   fieldToInterp: "right.color"
+  '   key: [0, 0.5, 1]
+  '   keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
+  ' }, false)
+
+  ' m.fcfi.update({
+  '   fieldToInterp: "left.color"
+  '   key: [0, 0.5, 1]
+  '   keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
+  ' })
+
+  keys = [0, 0.5, 1]
+  keyValues = ["0xFFFFFFFF", "0xFFFF00FF", "0xFF00FFFF"]
 
   m.cfi.update({
     fieldToInterp: "right.color"
-    key: [0, 0.5, 1]
-    keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
+    key: keys
+    keyValue: keyValues
   }, false)
 
   m.fcfi.update({
     fieldToInterp: "left.color"
-    key: [0, 0.5, 1]
-    keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
+    key: keys
+    keyValue: keyValues
   })
 
   m.anim.control = "start"
