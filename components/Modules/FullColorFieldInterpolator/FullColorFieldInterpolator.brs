@@ -54,13 +54,14 @@ sub onFractionChange(event)
 
     if Invalid <> self.keyValue[curIndex] AND Invalid <> m.colorDelta[curIndex]
       startColor = convertColor(self.keyValue[curIndex])
+      delta = (fraction - self.key[curIndex]) * m.colorDelta[curIndex].delta
 
-      r = startColor.r + (m.colorDelta[curIndex].r * fraction)
-      g = startColor.g + (m.colorDelta[curIndex].g * fraction)
-      b = startColor.b + (m.colorDelta[curIndex].b * fraction)
-      a = startColor.a + (m.colorDelta[curIndex].a * fraction)
+      r = startColor.r + (m.colorDelta[curIndex].r * delta)
+      g = startColor.g + (m.colorDelta[curIndex].g * delta)
+      b = startColor.b + (m.colorDelta[curIndex].b * delta)
+      a = startColor.a + (m.colorDelta[curIndex].a * delta)
 
-      ?fraction, StrI(r, 16), StrI(g, 16), StrI(b, 16), StrI(a, 16)
+      ' ?fraction, fraction - self.key[curIndex], delta, StrI(r, 16), StrI(g, 16), StrI(b, 16), StrI(a, 16)
 
       m.targetNode[m.targetFieldName] = (r << 24) + (g << 16) + (b << 8) + (a << 0)
     end if
@@ -78,7 +79,7 @@ sub updateColorTransition(self)
   end if
 
   for each colorChange in self.keyValue
-    if false = first
+    if false = first AND 0 < self.key[index]
       curColor = convertColor(colorChange)
 
       rDelta = curColor.r - prevColor.r
@@ -86,12 +87,16 @@ sub updateColorTransition(self)
       bDelta = curColor.b - prevColor.b
       aDelta = curColor.a - prevColor.a
 
-      m.colorDelta.push({r: rDelta, g: gDelta, b: bDelta, a: aDelta})
+      keyDelta = self.key[index] - self.key[index-1]
+
+      m.colorDelta.push({r: rDelta, g: gDelta, b: bDelta, a: aDelta, delta: 1/keyDelta})
+      prevColor = curColor
     else
       first = false
+
+      prevColor = convertColor(colorChange)
     end if
 
-    prevColor = convertColor(colorChange)
     index++
   end for
 end sub
@@ -107,7 +112,7 @@ function convertColor(inColor)
   end if
 
   if 0 <> instr(0, lcase(type(inColor)), "string")
-    ?"String"
+    ' ?"String"
   else
     r = &h000000FF AND inColor >> 24
     g = &h000000FF AND inColor >> 16

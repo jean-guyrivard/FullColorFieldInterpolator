@@ -5,6 +5,7 @@
   <interface>
   </interface>
   <children>
+    <Rectangle width="1920" height="50" color="#ffffffff" translation="[0, 540]" />
     <Rectangle id="left" />
     <Rectangle id="right" />
 

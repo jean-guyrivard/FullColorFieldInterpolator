@@ -37,8 +37,8 @@ sub init()
   '   keyValue: ["0xFF0000FF", "0x0000FFFF", "0x00FF00FF"]
   ' })
 
-  keys = [0, 0.5, 1]
-  keyValues = ["0xFFFFFFFF", "0xFFFF00FF", "0xFF00FFFF"]
+  keys = [0, 0.1, 0.8, 1]
+  keyValues = ["0xFFFFFFFF", "0xFFFF00DD", "0xFF00FFAA", "0x00FF0080"]
 
   m.cfi.update({
     fieldToInterp: "right.color"
